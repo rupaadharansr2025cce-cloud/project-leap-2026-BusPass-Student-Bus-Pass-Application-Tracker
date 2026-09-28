@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Bus Pass Application Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+<script src="script.js"></script>
+
+<div class="container">
+
+    <h1>Student Bus Pass Application Tracker</h1>
+
+    <div class="card">
+        <h2>Student</h2>
+
+        <button type="button" onclick="showStudentForm()">
+            Apply for Bus Pass
+        </button>
+
+        <button type="button" onclick="showStatusForm()">
+            Check Application Status
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>Admin</h2>
+
+        <button type="button" onclick="showApplications()">
+            View Applications
+        </button>
+    </div>
+
+    <div id="content"></div>
+
+</div>
+
+</body>
+</html>

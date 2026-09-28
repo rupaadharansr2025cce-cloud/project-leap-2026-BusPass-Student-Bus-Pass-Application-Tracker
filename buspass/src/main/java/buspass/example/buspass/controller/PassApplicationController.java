@@ -1,10 +1,14 @@
+
 package buspass.example.buspass.controller;
 
 import buspass.example.buspass.entity.PassApplication;
 import buspass.example.buspass.service.PassApplicationService;
+import buspass.example.buspass.service.PhotoUploadService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -13,20 +17,24 @@ import java.util.List;
 public class PassApplicationController {
 
     private final PassApplicationService passApplicationService;
+    private final PhotoUploadService photoUploadService;
 
     public PassApplicationController(
-            PassApplicationService passApplicationService) {
-
+            PassApplicationService passApplicationService,
+            PhotoUploadService photoUploadService) {
         this.passApplicationService = passApplicationService;
+        this.photoUploadService = photoUploadService;
     }
 
-    // Student applies for bus pass
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PassApplication> applyForPass(
             @RequestParam Long studentId,
             @RequestParam Long routeId,
             @RequestParam String boardingPoint,
-            @RequestParam String photoReference) {
+            @RequestParam("photo") MultipartFile photo) {
+
+        String photoReference =
+                photoUploadService.uploadPhoto(photo);
 
         PassApplication application =
                 passApplicationService.applyForPass(
@@ -42,65 +50,50 @@ public class PassApplicationController {
         );
     }
 
-    // Get all applications
     @GetMapping
     public ResponseEntity<List<PassApplication>> getAllApplications() {
-
         return ResponseEntity.ok(
                 passApplicationService.getAllApplications()
         );
     }
 
-    // Get application by ID
     @GetMapping("/{id}")
     public ResponseEntity<PassApplication> getApplicationById(
             @PathVariable Long id) {
-
         return ResponseEntity.ok(
                 passApplicationService.getApplicationById(id)
         );
     }
 
-    // Get applications by student
     @GetMapping("/student/{studentId}")
     public ResponseEntity<List<PassApplication>>
-    getApplicationsByStudent(
-            @PathVariable Long studentId) {
-
+    getApplicationsByStudent(@PathVariable Long studentId) {
         return ResponseEntity.ok(
                 passApplicationService
                         .getApplicationsByStudent(studentId)
         );
     }
 
-    // Admin approves application
     @PutMapping("/{id}/approve")
     public ResponseEntity<PassApplication> approveApplication(
             @PathVariable Long id) {
-
         return ResponseEntity.ok(
-                passApplicationService
-                        .approveApplication(id)
+                passApplicationService.approveApplication(id)
         );
     }
 
-    // Admin rejects application
     @PutMapping("/{id}/reject")
     public ResponseEntity<PassApplication> rejectApplication(
             @PathVariable Long id,
             @RequestParam String reason) {
-
         return ResponseEntity.ok(
-                passApplicationService
-                        .rejectApplication(id, reason)
+                passApplicationService.rejectApplication(id, reason)
         );
     }
 
-    // Passes expiring within 30 days
     @GetMapping("/expiring")
     public ResponseEntity<List<PassApplication>>
     getExpiringPasses() {
-
         return ResponseEntity.ok(
                 passApplicationService
                         .getPassesExpiringNext30Days()
